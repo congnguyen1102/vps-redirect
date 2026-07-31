@@ -68,17 +68,35 @@
     const content = document.getElementById('content');
 
     if (host && port) {
-      // Định dạng chính thức Microsoft công bố cho app "Remote Desktop" (com.microsoft.rdc.androidx)
-      const rdpUri = 'rdp://full address=s:' + host + ':' + port + '&username=s:' + user;
+      const rdpFileContent =
+        'full address:s:' + host + ':' + port + '\n' +
+        'username:s:' + user + '\n' +
+        'prompt for credentials:i:1\n' +
+        'authentication level:i:0\n' +
+        'screen mode id:i:2\n' +
+        'desktopwidth:i:1280\n' +
+        'desktopheight:i:720\n';
+
+      function downloadFile() {
+        const blob = new Blob([rdpFileContent], { type: 'application/rdp' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = host + '.rdp';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
 
       const btn = document.createElement('a');
       btn.className = 'fullscreen-btn';
-      btn.href = rdpUri;
+      btn.href = 'javascript:void(0)';
+      btn.onclick = downloadFile;
       btn.innerHTML =
         '<div class="icon">🖥️</div>' +
-        '<h1>Bấm vào đây để mở Remote Desktop</h1>' +
+        '<h1>Bấm để tải file kết nối</h1>' +
         '<code>' + host + ':' + port + '</code>' +
-        '<p class="tap-hint">👆 Cần cài app "Remote Desktop" của Microsoft Corporation</p>';
+        '<p class="tap-hint">👆 Sau khi tải xong, kéo thanh thông báo xuống,<br>bấm vào file vừa tải và chọn mở bằng aRDP</p>';
       content.appendChild(btn);
     } else {
       content.innerHTML = '<div class="error">Thiếu thông tin host/port trong link.</div>';
