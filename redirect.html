@@ -68,20 +68,18 @@
     const content = document.getElementById('content');
 
     if (host && port) {
-      const rdpUri = 'rdp://full%20address=s:' + host + ':' + port + '&username=s:' + encodeURIComponent(user);
+      // Định dạng chính thức Microsoft công bố cho app "Remote Desktop" (com.microsoft.rdc.androidx)
+      const rdpUri = 'rdp://full address=s:' + host + ':' + port + '&username=s:' + user;
 
-      const a = document.createElement('a');
-      a.className = 'fullscreen-btn';
-      a.href = rdpUri;
-      a.innerHTML =
+      const btn = document.createElement('a');
+      btn.className = 'fullscreen-btn';
+      btn.href = rdpUri;
+      btn.innerHTML =
         '<div class="icon">🖥️</div>' +
         '<h1>Bấm vào đây để mở Remote Desktop</h1>' +
         '<code>' + host + ':' + port + '</code>' +
-        '<p class="tap-hint">👆 Chạm vào bất kỳ đâu trên màn hình</p>';
-      content.appendChild(a);
-
-      // Không thể tự động chuyển hướng vì trình duyệt chặn (yêu cầu người dùng bấm thật),
-      // nên để cả trang là 1 nút bấm to, chỉ cần 1 cái chạm là mở app ngay.
+        '<p class="tap-hint">👆 Cần cài app "Remote Desktop" của Microsoft Corporation</p>';
+      content.appendChild(btn);
     } else {
       content.innerHTML = '<div class="error">Thiếu thông tin host/port trong link.</div>';
     }
