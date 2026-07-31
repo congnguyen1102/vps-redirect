@@ -3,65 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Đang mở Remote Desktop...</title>
+<title>Mở Remote Desktop</title>
 <style>
-  body {
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
     font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background: #1e1e2e;
-    color: #eee;
+  }
+  a.fullscreen-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    margin: 0;
+    width: 100%;
+    background: linear-gradient(160deg, #4f7cff, #2b4fd6);
+    color: white;
+    text-decoration: none;
     text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 24px;
   }
-  h2 { margin-bottom: 8px; }
-  p { color: #aaa; font-size: 14px; }
+  .icon { font-size: 64px; margin-bottom: 16px; }
+  h1 { font-size: 22px; margin: 0 0 12px; }
+  p { font-size: 15px; opacity: 0.9; margin: 4px 0; }
   code {
-    background: #333;
-    padding: 6px 10px;
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
     border-radius: 6px;
     display: inline-block;
-    margin-top: 10px;
-    font-size: 15px;
+    margin-top: 14px;
+    font-size: 16px;
   }
-  .btn {
-    margin-top: 20px;
-    padding: 12px 24px;
-    background: #4f7cff;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
+  .tap-hint {
+    margin-top: 24px;
+    font-size: 13px;
+    opacity: 0.75;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  .error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #c00;
+    font-size: 16px;
+    text-align: center;
+    padding: 24px;
   }
 </style>
 </head>
 <body>
-  <h2>🔄 Đang mở Remote Desktop...</h2>
-  <p id="info">Nếu app không tự mở sau 2 giây, bấm nút bên dưới.</p>
-  <a class="btn" id="manualLink" href="#">Mở thủ công</a>
+  <div id="content"></div>
 
   <script>
-    // Đọc host, port, username từ query string trên URL
-    // Ví dụ: redirect.html?host=1.2.3.4&port=41520&user=Administrator
     const params = new URLSearchParams(window.location.search);
     const host = params.get('host');
     const port = params.get('port');
     const user = params.get('user') || 'Administrator';
+    const content = document.getElementById('content');
 
     if (host && port) {
       const rdpUri = 'rdp://full%20address=s:' + host + ':' + port + '&username=s:' + encodeURIComponent(user);
-      document.getElementById('info').innerText = host + ':' + port;
-      document.getElementById('manualLink').href = rdpUri;
 
-      // Tự động chuyển hướng sang app Remote Desktop
-      window.location.href = rdpUri;
+      const a = document.createElement('a');
+      a.className = 'fullscreen-btn';
+      a.href = rdpUri;
+      a.innerHTML =
+        '<div class="icon">🖥️</div>' +
+        '<h1>Bấm vào đây để mở Remote Desktop</h1>' +
+        '<code>' + host + ':' + port + '</code>' +
+        '<p class="tap-hint">👆 Chạm vào bất kỳ đâu trên màn hình</p>';
+      content.appendChild(a);
+
+      // Không thể tự động chuyển hướng vì trình duyệt chặn (yêu cầu người dùng bấm thật),
+      // nên để cả trang là 1 nút bấm to, chỉ cần 1 cái chạm là mở app ngay.
     } else {
-      document.getElementById('info').innerText = 'Thiếu thông tin host/port trong link.';
+      content.innerHTML = '<div class="error">Thiếu thông tin host/port trong link.</div>';
     }
   </script>
 </body>
